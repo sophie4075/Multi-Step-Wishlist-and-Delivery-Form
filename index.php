@@ -4,96 +4,83 @@ ini_set('display_errors', '1');
 session_start();
 
 /**
- * Validiert die Eingaben des Wunschlisten-Formulars.
- * Überprüft, ob mindestens eine Eingabe vorhanden ist und dass keine Eingabe Sonderzeichen enthält
- * oder eine unzulässige Länge unter- oder überschreitet.
- */
+  * Validates wish list form entries.
+  * Checks whether there is at least one input and that no input contains special characters or is less than or greater than an invalid length.
+  */
 function validateWishes($post)
 {
-    //Array für potenzielle Fehlermedlungen
+    //Array for potential error messages
     $errors = [];
-    // Zähler für gültige Eingaben
+    // Counter for valid inputs
     $validInputCount = 0;
 
-    // Die Daten, welche in den Input-Feldern des Formulars sind, werden in einem Array gespeichert und durchlaufen
     foreach (['wish1', 'wish2', 'wish3'] as $field) {
-        //Checkt ob das Feld nicht leer ist
         if (!empty($post[$field])) {
-            // Überprüfung, ob das Feld nur Zeichen von A-Z (Groß- und Kleinbuchstaben), Zahlen, Leerzeichen und Umlaute enthält
-            // und ob es eine zulässige Länge zwischen 4 und 20 Zeichen hat
             if (!preg_match('/^[a-zA-Z0-9äöüÄÖÜß ]{4,20}$/', $post[$field])) {
                 $errors[$field] = "Der Wunsch darf weder Sonderzeichen enthalten, nicht kürzer als 4 und nicht länger als 20 Zeichen sein.";
             } else {
-                // Inkrementieren für jedes gültig ausgefüllte Feld, um zu prüfen, ob zumindest ein Feld korrekt ausgefüllt ist
                 $validInputCount++;
             }
         }
     }
 
-    // Überprüfe, ob mindestens ein Feld gültig ausgefüllt wurde
     if ($validInputCount == 0) {
-        $errors['general'] = "Mindestens ein Feld muss ausgefüllt werden.";
+        $errors['general'] = "At least one field must be filled out.";
     }
 
-    //Gibt das Error Array zurück
     return $errors;
 }
 
 
-// Funktion zur Validierung der Eingaben im Lieferadress-Formulars
+// Function for validating delivery address form entries
 function validateDelivery($post)
 {
     $errors = [];
 
-    //Hier wird für jedes Feld überprüft, ob es leer ist und nur erlaubte Zeichen verwendet werden
-    //Wenn ja, Fehlermeldung!
+   
     if (empty($post['name']) || !preg_match('/^[a-zA-ZäöüÄÖÜß ]{4,20}$/', $post['name'])) {
-        $errors['name'] = 'Bitte geben Sie einen gültigen Namen ein.';
+        $errors['name'] = 'Please enter a valid name';
     }
     if (empty($post['address']) || !preg_match('/^[a-zA-Z0-9äöüÄÖÜß ]{4,30}$/', $post['address'])) {
-        $errors['address'] = 'Bitte geben Sie eine gültige Adresse ein.';
+        $errors['address'] = 'Please enter a valid address.';
     }
     if (empty($post['zip']) || !preg_match('/^[0-9]{5}$/', $post['zip'])) {
-        $errors['zip'] = 'Die Postleitzahl muss fünfstellig sein.';
+        $errors['zip'] = 'ZIP must contain 5 numbers.';
     }
     if (empty($post['city']) || !preg_match('/^[a-zA-ZäöüÄÖÜß ]{4,32}$/', $post['name'])) {
-        $errors['city'] = 'Bitte geben Sie eine Stadt ein.';
+        $errors['city'] = 'Please enter a city.';
     }
 
 
     return $errors;
 }
 
-//Ein Array zur Speicherung von Fehlermeldungen
 $errors = [];
-$stage = 1;  // Default Erste Form, das Formular der Wunschliste soll zuerst angezeigt werden
+// Default Form
+$stage = 1;  
 
-// Überprüft, ob das Wunschlisten-Formular abgesendet wurde
+// Checks whether the wish list form has been sent
 if (isset($_POST['submitWishes'])) {
 
-    /*
-    * Ruft die Funktion validateWishes auf, um die über die POST-Anfrage übermittelten Formulardaten zu validieren.
-    * Die zurückgegebenen Fehlermeldungen werden in $errors gespeichert und verwendet, um dem Benutzer Rückmeldung zu geben,
-    * welche Eingaben eventuell korrigiert werden müssen.
-    * Wenn keine Fehler gefunden werden, wird zum nächsten Formular übergegangen.
-    */
-
+/*
+    * Calls the validateWishes function to validate the form data sent via the POST request.
+    * The error messages returned are stored in $errors and used to provide feedback to the user,
+    * which entries may need to be corrected.
+    * If no errors are found, the system moves on to the next form.
+ */
     $errors = validateWishes($_POST);
 
-    // Prüft, ob das Array $errors leer ist, was bedeutet, dass keine Fehler gefunden wurden.
     if (empty($errors)) {
-        // Speichert die validierten Daten in der Session, um sie später weiterverwenden zu können.
+        // Saves the validated data within the session it can be used later.
         $_SESSION['wishes'] = $_POST;
-        // Setzt Stage auf 2, um zum nächsten Formular zu "gehen"
+        // Sets stage 2 to ‘go’ to the next form
         $stage = 2;
     } else {
-        // Wenn Fehler vorhanden sind, bleiben wir beim Wunschlistenformular um fehlerhafte Inputs zu korrigieren.
         $stage = 1;
     }
 }
 
-//Gleiches Prinzip wie beim Wunschlisten Formular :)
-if (isset($_POST['submitDelivery'])) {
+//Same principle as with the wish list form :)if (isset($_POST['submitDelivery'])) {
     $errors = validateDelivery($_POST);
     if (empty($errors)) {
         $_SESSION['delivery'] = $_POST;
@@ -105,7 +92,7 @@ if (isset($_POST['submitDelivery'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <title>Wishlist</title>
     <meta charset="utf-8">
@@ -117,7 +104,7 @@ if (isset($_POST['submitDelivery'])) {
 <?php
 switch ($stage) {
     case 1:
-        //Bindet die angegebene Datei ein und wertet sie aus.
+        //Integrates the specified file and evaluates it.
         include 'wishes_form.php';
         break;
     case 2:
@@ -127,7 +114,7 @@ switch ($stage) {
         include 'confirmation.php';
         break;
     default:
-        echo "Ein unbekannter Fehler ist aufgetreten. :(";
+        echo "An unknown error has occurred. :(";
         break;
 }
 ?>
