@@ -1,5 +1,5 @@
 <div class="responsive-form">
-    <h1>Wunschliste</h1>
+    <h1>Wishlist</h1>
     <form class="form-container" method="post" action="index.php">
         <label for="firstWish"
                class="form-container-label">
@@ -10,14 +10,14 @@
                name="wish1"
                placeholder="Lego"
                class="form-container-input" >
-        <!--Es wird geprüft, ob im Array $errors ein Eintrag unter dem Schlüssel wish1 existiert. -->
+        <!--Checking whether an entry exists in the array $errors under the key wish1. -->
         <?php if (isset($errors['wish1'])): ?>
-            <!-- Wenn ein Fehler für das wish1-Feld vorhanden ist, wird dieser hier angezeigt. -->
+            <!-- If an error oocurs for the wish1 field, it will be displayed here. -->
             <div class="error">
-                <!--Gibt den Text der Fehlermeldung aus, die im Array $errors unter dem Key wish1 gespeichert ist.-->
+                <!-- Displays the text of the error message that is stored in the array $errors under the key wish1..-->
                 <?php echo $errors['wish1']; ?>
             </div>
-            <!-- Schließt die if Bedingung ab-->
+             <!-- Closes the if condition-->
         <?php endif; ?>
 
         <label for="secondWish"
